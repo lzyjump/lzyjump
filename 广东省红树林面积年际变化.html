@@ -1,69 +1,89 @@
-<!--
-	此示例下载自 https://echarts.apache.org/examples/zh/editor.html?c=line-smooth
--->
 <!DOCTYPE html>
-<html lang="en" style="height: 100%">
+<html lang="zh-CN">
 <head>
-  <meta charset="utf-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECharts图表</title>
+    <!-- 引入ECharts库 - 使用稳定的CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        #container {
+            width: 100%;
+            height: 100%;
+            min-height: 400px; /* 确保有最小高度 */
+        }
+        .error-message {
+            color: red;
+            padding: 20px;
+            display: none;
+        }
+    </style>
 </head>
-<body style="height: 100%; margin: 0">
-  <div id="container" style="height: 100%"></div>
+<body>
+    <div id="container"></div>
+    <div class="error-message" id="errorMsg"></div>
 
-  
-  <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
-  
-  <!-- Uncomment this line if you want to dataTool extension
-  <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5/dist/extension/dataTool.min.js"></script>
-  -->
-  <!-- Uncomment this line if you want to use gl extension
-  <script type="text/javascript" src="https://echarts.apache.org/zh/js/vendors/echarts-gl/dist/echarts-gl.min.js"></script>
-  -->
-  <!-- Uncomment this line if you want to echarts-stat extension
-  <script type="text/javascript" src="https://echarts.apache.org/zh/js/vendors/echarts-stat/dist/ecStat.min.js"></script>
-  -->
-  <!-- Uncomment this line if you want to echarts-graph-modularity extension
-  <script type="text/javascript" src="https://echarts.apache.org/zh/js/vendors/echarts-graph-modularity/dist/echarts-graph-modularity.min.js"></script>
-  -->
-  <!-- Uncomment this line if you want to use map
-  <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@4.9.0/map/js/world.js"></script>
-  -->
-  <!-- Uncomment these two lines if you want to use bmap extension
-  <script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=YOUR_API_KEY"></script>
-  <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5/dist/extension/bmap.min.js"></script>
-  -->
+    <script>
+        // 增加错误处理
+        try {
+            // 检查ECharts是否加载成功
+            if (typeof echarts === 'undefined') {
+                throw new Error('ECharts库未加载成功，请检查网络或引用地址');
+            }
 
-  <script type="text/javascript">
-    var dom = document.getElementById('container');
-    var myChart = echarts.init(dom, null, {
-      renderer: 'canvas',
-      useDirtyRect: false
-    });
-    var app = {};
-    
-    var option;
+            var dom = document.getElementById('container');
+            if (!dom) {
+                throw new Error('未找到容器元素');
+            }
 
-    option = {
-  xAxis: {
-    type: 'category',
-    data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-  },
-  yAxis: {
-    type: 'value'
-  },
-  series: [
-    {
-      data: [820, 932, 901, 934, 1290, 1330, 1320],
-      type: 'line',
-      smooth: true
-    }
-  ]
-};
+            var myChart = echarts.init(dom, null, {
+                renderer: 'canvas',
+                useDirtyRect: false
+            });
 
-    if (option && typeof option === 'object') {
-      myChart.setOption(option);
-    }
+            var option = {
+                xAxis: {
+                    type: 'category',
+                    data: ['1985', '1990', '1995', '2000', '2005', '2010', '2015','2020','2025']
+                },
+                yAxis: {
+                    name: '公顷(hm²)',
+                    type: 'value'
+                },
+                series: [
+                    {
+                        data: [8249.73, 6657.42, 9576.33, 9326.72, 12330.42, 13215.65, 11325.56, 11895.56, 11405.07],
+                        type: 'line',
+                        smooth: true
+                    }
+                ]
+            };
 
-    window.addEventListener('resize', myChart.resize);
-  </script>
+            if (option && typeof option === 'object') {
+                myChart.setOption(option);
+            }
+
+            // 优化 resize 事件处理
+            window.addEventListener('resize', function() {
+                if (myChart && typeof myChart.resize === 'function') {
+                    myChart.resize();
+                }
+            });
+
+            console.log('图表初始化成功');
+        } catch (error) {
+            console.error('图表加载失败:', error);
+            // 显示错误信息给用户
+            document.getElementById('errorMsg').textContent = '图表加载失败: ' + error.message;
+            document.getElementById('errorMsg').style.display = 'block';
+        }
+    </script>
 </body>
 </html>
