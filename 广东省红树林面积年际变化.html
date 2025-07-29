@@ -1,89 +1,152 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en" style="height: 100%">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ECharts图表</title>
-    <!-- 引入ECharts库 - 使用稳定的CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
-    <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-        }
-        #container {
-            width: 100%;
-            height: 100%;
-            min-height: 400px; /* 确保有最小高度 */
-        }
-        .error-message {
-            color: red;
-            padding: 20px;
-            display: none;
-        }
-    </style>
+  <meta charset="utf-8">
+  <title>广东省红树林面积变化</title>
 </head>
-<body>
-    <div id="container"></div>
-    <div class="error-message" id="errorMsg"></div>
+<body style="height: 100%; margin: 0">
+  <div id="container" style="height: 100%"></div>
 
-    <script>
-        // 增加错误处理
-        try {
-            // 检查ECharts是否加载成功
-            if (typeof echarts === 'undefined') {
-                throw new Error('ECharts库未加载成功，请检查网络或引用地址');
-            }
+  <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
 
-            var dom = document.getElementById('container');
-            if (!dom) {
-                throw new Error('未找到容器元素');
-            }
+  <script type="text/javascript">
+    var dom = document.getElementById('container');
+    var myChart = echarts.init(dom, 'dark', {
+      renderer: 'canvas',
+      useDirtyRect: false
+    });
+    var app = {};
+    
+    var option;
 
-            var myChart = echarts.init(dom, null, {
-                renderer: 'canvas',
-                useDirtyRect: false
-            });
+    // 使用你的数据
+    const data = [
+      ["1985", 8249.73], 
+      ["1990", 6657.42], 
+      ["1995", 9576.33], 
+      ["2000", 9326.72], 
+      ["2005", 12330.42], 
+      ["2010", 13215.65], 
+      ["2015", 11325.56], 
+      ["2020", 11895.56], 
+      ["2025", 11405.07]
+    ];
+    
+    const dateList = data.map(function (item) {
+      return item[0];
+    });
 
-            var option = {
-                xAxis: {
-                    type: 'category',
-                    data: ['1985', '1990', '1995', '2000', '2005', '2010', '2015','2020','2025']
-                },
-                yAxis: {
-                    name: '公顷(hm²)',
-                    type: 'value'
-                },
-                series: [
-                    {
-                        data: [8249.73, 6657.42, 9576.33, 9326.72, 12330.42, 13215.65, 11325.56, 11895.56, 11405.07],
-                        type: 'line',
-                        smooth: true
-                    }
-                ]
-            };
+    const valueList = data.map(function (item) {
+      return item[1];
+    });
 
-            if (option && typeof option === 'object') {
-                myChart.setOption(option);
-            }
-
-            // 优化 resize 事件处理
-            window.addEventListener('resize', function() {
-                if (myChart && typeof myChart.resize === 'function') {
-                    myChart.resize();
-                }
-            });
-
-            console.log('图表初始化成功');
-        } catch (error) {
-            console.error('图表加载失败:', error);
-            // 显示错误信息给用户
-            document.getElementById('errorMsg').textContent = '图表加载失败: ' + error.message;
-            document.getElementById('errorMsg').style.display = 'block';
+    option = {
+      // 渐变视觉映射
+      visualMap: [
+        {
+          show: false,
+          type: 'continuous',
+          seriesIndex: 0,
+          min: 0,
+          max: 20000
         }
-    </script>
+      ],
+      title: [
+        {
+          left: 'center',
+          text: '广东省近40年来红树林面积(hm²)变化',
+          textStyle: {
+            color: '#fff' // 适应深色主题
+          }
+        }
+      ],
+      tooltip: {
+        trigger: 'axis',
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+        borderColor: '#444',
+        textStyle: {
+          color: '#fff'
+        },
+        formatter: function(params) {
+          return params[0].name + '<br/>面积: ' + params[0].value + ' 公顷';
+        }
+      },
+      xAxis: [
+        {
+          data: dateList,
+          axisLine: {
+            lineStyle: {
+              color: '#666'
+            }
+          },
+          axisLabel: {
+            color: '#ccc',
+            rotate: 30
+          }
+        }
+      ],
+      yAxis: [
+        {
+          name: '公顷(hm²)',
+          nameTextStyle: {
+            color: '#ccc'
+          },
+          axisLine: {
+            lineStyle: {
+              color: '#666'
+            }
+          },
+          axisLabel: {
+            color: '#ccc'
+          },
+          splitLine: {
+            lineStyle: {
+              color: 'rgba(255, 255, 255, 0.1)'
+            }
+          }
+        }
+      ],
+      grid: [
+        {
+          bottom: '10%',
+          left: '8%',
+          right: '5%',
+          top: '15%'
+        }
+      ],
+      series: [
+        {
+          type: 'line',
+          showSymbol: true,
+          symbol: 'circle',
+          symbolSize: 6,
+          data: valueList,
+          lineStyle: {
+            width: 3
+          },
+          // 添加区域填充渐变效果
+          areaStyle: {
+            color: {
+              type: 'linear',
+              x: 0,
+              y: 0,
+              x2: 0,
+              y2: 1,
+              colorStops: [
+                { offset: 0, color: 'rgba(128, 189, 255, 0.6)' },
+                { offset: 1, color: 'rgba(128, 189, 255, 0)' }
+              ]
+            }
+          }
+        }
+      ]
+    };
+
+    if (option && typeof option === 'object') {
+      myChart.setOption(option);
+    }
+
+    window.addEventListener('resize', myChart.resize);
+  </script>
 </body>
 </html>
